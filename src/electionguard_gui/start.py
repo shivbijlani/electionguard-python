@@ -11,7 +11,7 @@ from electionguard_gui.gui_setup_election.gui_setup_input_retrieval_step import 
 
 
 @eel.expose
-def setup_election(guardian_count: int, quorum: int, manifest: str) -> None:
+def setup_election(guardian_count: int, quorum: int, manifest: str) -> str:
     election_inputs = GuiSetupInputRetrievalStep().get_gui_inputs(
         guardian_count, quorum, manifest
     )
@@ -19,10 +19,13 @@ def setup_election(guardian_count: int, quorum: int, manifest: str) -> None:
     build_election_results = ElectionBuilderStep().build_election_with_key(
         election_inputs, joint_key
     )
-    OutputSetupFilesStep().output(election_inputs, build_election_results)
-    print(
-        f"Setting up election with guardianCount: {guardian_count}, quorum: {quorum}, manifest: {manifest}"
-    )
+    files = OutputSetupFilesStep().output(election_inputs, build_election_results)
+    context_file = files[0]
+    constants_file = files[1]
+    print(f"Setup complete, context: {context_file}, constants: {constants_file}")
+    with open(context_file, "r", encoding="utf-8") as context_file:
+        context_raw = context_file.read()
+        return context_raw
 
 
 def run() -> None:

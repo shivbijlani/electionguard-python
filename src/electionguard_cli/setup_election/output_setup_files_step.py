@@ -1,3 +1,4 @@
+from typing import List
 from os.path import join
 from electionguard.election import CiphertextElectionContext
 from electionguard.serialize import to_file
@@ -19,25 +20,32 @@ class OutputSetupFilesStep(OutputStepBase):
 
     def output(
         self, setup_inputs: SetupInputs, build_election_results: BuildElectionResults
-    ) -> None:
+    ) -> List[str]:
         self.print_header("Generating Output")
-        self._export_context(setup_inputs, build_election_results.context)
-        self._export_constants(setup_inputs)
-        self._export_manifest(setup_inputs)
+        context_file = self._export_context(
+            setup_inputs, build_election_results.context
+        )
+        constants_file = self._export_constants(setup_inputs)
+        manifest_file = self._export_manifest(setup_inputs)
         self._export_guardian_records(setup_inputs)
         self._export_guardian_private_keys(setup_inputs)
+        return [context_file, constants_file, manifest_file]
 
     def _export_context(
         self, setup_inputs: SetupInputs, context: CiphertextElectionContext
-    ) -> None:
-        self._export_file("Context", context, setup_inputs.out, CONTEXT_FILE_NAME)
+    ) -> str:
+        return self._export_file(
+            "Context", context, setup_inputs.out, CONTEXT_FILE_NAME
+        )
 
-    def _export_constants(self, setup_inputs: SetupInputs) -> None:
+    def _export_constants(self, setup_inputs: SetupInputs) -> str:
         constants = get_constants()
-        self._export_file("Constants", constants, setup_inputs.out, CONSTANTS_FILE_NAME)
+        return self._export_file(
+            "Constants", constants, setup_inputs.out, CONSTANTS_FILE_NAME
+        )
 
-    def _export_manifest(self, setup_inputs: SetupInputs) -> None:
-        self._export_file(
+    def _export_manifest(self, setup_inputs: SetupInputs) -> str:
+        return self._export_file(
             "Manifest",
             setup_inputs.manifest,
             setup_inputs.out,
