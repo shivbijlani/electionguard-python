@@ -7,7 +7,7 @@ from ..cli_models import (
 
 
 class MarkBallotInputs(CliElectionInputsBase):
-    """Responsible for holding the inputs for the CLI's encrypt ballots command"""
+    """Responsible for holding the inputs for the CLI's mark ballots command"""
 
     def __init__(
         self,
